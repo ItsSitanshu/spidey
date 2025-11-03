@@ -1,0 +1,7 @@
+requests
+opencv-python
+numpy
+adafruit-circuitpython-pca9685
+adafruit-blinka
+board
+busio

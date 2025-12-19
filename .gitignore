@@ -1,6 +1,12 @@
 venv/
 clips/
-__*/
+node_modules/
 
-*.pt
 .vscode/
+
+__*/
+*.pt
+
+*package-lock.json
+
+use-firebase.ts

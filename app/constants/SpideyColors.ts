@@ -10,6 +10,7 @@ export interface SpideyColorScheme {
   accent2: string;
   textPrimary: string;
   textSecondary: string;
+  textMuted: string,
   border: string;
   alertRed: string;
   statusOn: string;
@@ -24,6 +25,7 @@ export const DEFAULT_COLORS: SpideyColorScheme = {
   accent2: '#8241f5',
   textPrimary: '#FFFFFF',
   textSecondary: '#AAAAAA',
+  textMuted: '#AAAAAA',
   border: '#333333',
   alertRed: '#FF0000',
   statusOn: '#00FF00',

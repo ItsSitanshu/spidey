@@ -13,6 +13,7 @@ import { Image } from 'expo-image';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { DEFAULT_COLORS as COLORS } from '@/constants/SpideyColors';
 import LiveFeed from '@/components/LiveFeed';
+import SystemStatus from '@/components/SystemStatus';
 
 
 interface LogEntry {
@@ -106,24 +107,8 @@ export default function SpideyScreen() {
           />
           <Text style={styles.title}>SPIDEY</Text>
         </View>
-        <Text style={styles.subtitle}>Autonomous Security System</Text>
 
         {/* Status Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>STATUS</Text>
-          <View style={styles.statusGrid}>
-            <TouchableOpacity onPress={() => setVideoOn(!videoOn)}>
-              <StatusIndicator label="Video" isOn={videoOn} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setAudioOn(!audioOn)}>
-              <StatusIndicator label="Audio" isOn={audioOn} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setAlertOn(!alertOn)}>
-              <StatusIndicator label="Alert" isOn={alertOn} isAlert={true} />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.lastActivity}>Last activity: {lastActivity}</Text>
-        </View>
 
         {/* Live Feed Section */}
         <View style={styles.section}>
@@ -146,44 +131,21 @@ export default function SpideyScreen() {
                   <Text style={styles.recordingText}>STREAMING</Text>
                 </View>
               )}
-
-              {/* {isExpanded && (
-                <Image
-                  source={{ uri: PI_STREAM_URL }}
-                  style={styles.video}
-                  contentFit="cover"
-                />
-              )} */}
-
               <LiveFeed/>
             </View>
           </TouchableOpacity>
-          {/* 
-          <TouchableOpacity 
-            style={[
-              styles.liveFeed,
-              isExpanded && styles.liveFeedExpanded
-            ]}
-            onPress={() => setIsExpanded(!isExpanded)}
-            activeOpacity={0.8}
-          >
-            <View style={styles.liveFeedContent}>
-              <Text style={styles.liveFeedTitle}>LIVE CAMERA STREAM</Text>
-              <Text style={styles.liveFeedSubtitle}>(Raspberry Pi Feed)</Text>
-              {videoOn && (
-                <View style={styles.streamIndicator}>
-                  <View style={styles.recordingDot} />
-                  <Text style={styles.recordingText}>STREAMING</Text>
-                </View>
-              )}
-            </View>
-          </TouchableOpacity> */}
-          <Text style={styles.tapToExpand}>
-            {isExpanded ? 'Tap to collapse' : 'Tap to expand'}
-          </Text>
         </View>
+        
+        <SystemStatus
+          videoOn={videoOn}
+          audioOn={audioOn}
+          alertOn={alertOn}
+          lastActivity={lastActivity}
+          onToggleVideo={() => setVideoOn(v => !v)}
+          onToggleAudio={() => setAudioOn(a => !a)}
+          onToggleAlert={() => setAlertOn(a => !a)}
+        />
 
-        {/* Intrusion Log Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>INTRUSION LOG</Text>
           <View style={styles.logContainer}>
@@ -197,7 +159,6 @@ export default function SpideyScreen() {
           </View>
         </View>
 
-        {/* Controls Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>CONTROLS</Text>
           <View style={styles.controlsGrid}>
@@ -218,7 +179,6 @@ export default function SpideyScreen() {
           </View>
         </View>
 
-        {/* Footer */}
         <View style={styles.footer}>
           <View style={styles.footerContent}>
             <Text style={styles.footerText}>System: </Text>
@@ -253,11 +213,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   logo: {
-    width: 40,
-    height: 40,
+    width: 64,
+    height: 64,
   },
   title: {
-    fontSize: 32,
+    fontSize: 54,
     fontFamily: 'Inter_700Bold',
     color: COLORS.textPrimary,
     letterSpacing: 2,

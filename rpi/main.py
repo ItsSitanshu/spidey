@@ -1,5 +1,5 @@
 import asyncio, websockets, aiohttp, cv2, time, threading
-from movement import HexapodController, ServoDriver
+from rpi.depr.movement import HexapodController, ServoDriver
 from maps.beta import *
 
 

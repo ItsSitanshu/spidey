@@ -6,7 +6,6 @@ import time
 from adafruit_pca9685 import PCA9685
 from maps.beta import *
 
-
 class ServoDriver:
     def __init__(self, freq=50):
         self.freq = freq

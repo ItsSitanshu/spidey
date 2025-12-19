@@ -1,7 +1,6 @@
-requests
 opencv-python
-numpy
-adafruit-circuitpython-pca9685
+websockets
+aiohttp
 adafruit-blinka
-board
-busio
+adafruit-circuitpython-servokit
+RPi.GPIO; platform_machine == "armv7l" or platform_machine == "aarch64"

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import WebView from 'react-native-webview';
 import {
   View,
   Text,
@@ -11,6 +12,8 @@ import {
 import { Image } from 'expo-image';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { DEFAULT_COLORS as COLORS } from '@/constants/SpideyColors';
+import LiveFeed from '@/components/LiveFeed';
+
 
 interface LogEntry {
   id: string;
@@ -23,6 +26,8 @@ interface StatusIndicatorProps {
   isOn: boolean;
   isAlert?: boolean;
 }
+
+const PI_STREAM_URL = "http://10.10.254.98:5000/video";
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ label, isOn, isAlert = false }) => (
   <View style={styles.statusIndicator}>
@@ -123,6 +128,37 @@ export default function SpideyScreen() {
         {/* Live Feed Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>LIVE FEED</Text>
+          <TouchableOpacity
+            style={[
+              styles.liveFeed,
+              isExpanded && styles.liveFeedExpanded
+            ]}
+            onPress={() => setIsExpanded(!isExpanded)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.liveFeedContent}>
+              <Text style={styles.liveFeedTitle}>LIVE CAMERA STREAM</Text>
+              <Text style={styles.liveFeedSubtitle}>(Raspberry Pi Feed)</Text>
+
+              {videoOn && (
+                <View style={styles.streamIndicator}>
+                  <View style={styles.recordingDot} />
+                  <Text style={styles.recordingText}>STREAMING</Text>
+                </View>
+              )}
+
+              {/* {isExpanded && (
+                <Image
+                  source={{ uri: PI_STREAM_URL }}
+                  style={styles.video}
+                  contentFit="cover"
+                />
+              )} */}
+
+              <LiveFeed/>
+            </View>
+          </TouchableOpacity>
+          {/* 
           <TouchableOpacity 
             style={[
               styles.liveFeed,
@@ -141,7 +177,7 @@ export default function SpideyScreen() {
                 </View>
               )}
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text style={styles.tapToExpand}>
             {isExpanded ? 'Tap to collapse' : 'Tap to expand'}
           </Text>
@@ -418,4 +454,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
     color: COLORS.accent1,
   },
+  video: {
+  width: '100%',
+  height: 250,
+  marginTop: 12,
+  borderRadius: 12,
+},
+
 });

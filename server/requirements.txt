@@ -7,3 +7,4 @@ asyncio
 pillow
 python-multipart      
 requests              
+websockets

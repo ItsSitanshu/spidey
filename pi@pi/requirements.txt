@@ -1,0 +1,6 @@
+opencv-python
+websockets
+aiohttp
+adafruit-blinka
+adafruit-circuitpython-servokit
+RPi.GPIO; platform_machine == "armv7l" or platform_machine == "aarch64"

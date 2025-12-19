@@ -2,7 +2,7 @@
 # scp_rpi.sh — Copy local folders to Raspberry Pi with presets
 
 PI_USER="pi"
-PI_HOST="raspberrypi.local"
+PI_HOST="10.10.254.98"
 PI_DEST="/"    
 
 show_usage() {

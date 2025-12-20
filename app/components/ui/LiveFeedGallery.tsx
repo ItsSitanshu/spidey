@@ -20,12 +20,9 @@ import {
 } from "firebase/firestore";
 import { db } from "@/hooks/use-firebase";
 
-/* Enable smooth expand animation on Android */
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-/* ---------- Types ---------- */
 
 interface GalleryImage {
   id: string;
@@ -39,7 +36,6 @@ interface LiveFeedGalleryProps {
   onToggleExpand: () => void;
 }
 
-/* ---------- Component ---------- */
 
 const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
   videoOn,
@@ -52,7 +48,7 @@ const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
     const q = query(
       collection(db, "live_feed"),
       orderBy("timestamp", "desc"),
-      limit(12)
+      limit(6)
     );
 
     const unsub = onSnapshot(q, snapshot => {
@@ -73,8 +69,6 @@ const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>LIVE FEED</Text>
-
       <Pressable
         onPress={toggle}
         style={[
@@ -84,14 +78,14 @@ const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
       >
         <View style={styles.header}>
           <Text style={styles.title}>CAMERA GALLERY</Text>
-          <Text style={styles.subtitle}>Raspberry Pi (Firebase Pool)</Text>
+          <Text style={styles.subtitle}>Click to open live feed</Text>
 
-          {videoOn && (
+          {/* {videoOn && (
             <View style={styles.streamIndicator}>
               <View style={styles.recordingDot} />
               <Text style={styles.recordingText}>ACTIVE</Text>
             </View>
-          )}
+          )} */}
         </View>
 
         {isExpanded && (
@@ -112,5 +106,81 @@ const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  section: {
+    width: '100%',
+    flex: 1
+  },
+
+  sectionTitle: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    letterSpacing: 1,
+    marginBottom: 10
+  },
+
+  container: {
+    backgroundColor: "#121212",
+    borderRadius: 22,
+    padding: 16,
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#1e1e1e"
+  },
+
+  containerExpanded: {
+    paddingBottom: 12
+  },
+
+  header: {
+    marginBottom: 12
+  },
+
+  title: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: COLORS.accent1
+  },
+
+  subtitle: {
+    fontSize: 12,
+    color: COLORS.textMuted,
+    marginTop: 2
+  },
+
+  streamIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8
+  },
+
+  recordingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.accent1,
+    marginRight: 6
+  },
+
+  recordingText: {
+    fontSize: 11,
+    letterSpacing: 1,
+    color: COLORS.accent1
+  },
+
+  row: {
+    justifyContent: "space-between"
+  },
+
+  image: {
+    width: "32%",
+    aspectRatio: 1,
+    borderRadius: 12,
+    marginBottom: 6,
+    backgroundColor: "#222"
+  }
+});
+
 
 export default LiveFeedGallery;

@@ -1,5 +1,4 @@
 import React, { useState} from 'react';
-import WebView from 'react-native-webview';
 import {
   View,
   Text,
@@ -8,19 +7,18 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  Modal
 } from 'react-native';
 import { Image } from 'expo-image';
+
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { DEFAULT_COLORS as COLORS } from '@/constants/SpideyColors';
-import LiveFeed from '@/components/LiveFeed';
+
+import LiveFeed from '@/components/ui/LiveFeed';
 import SystemStatus from '@/components/SystemStatus';
+import LiveFeedGallery from '@/components/ui/LiveFeedGallery';
+import ActivityLog, { LogEntry } from '@/components/ui/ActivityLog';
 
-
-interface LogEntry {
-  id: string;
-  time: string;
-  message: string;
-}
 
 interface StatusIndicatorProps {
   label: string;
@@ -66,13 +64,12 @@ export default function SpideyScreen() {
   const [alertOn, setAlertOn] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   
-  // Sample intrusion log data
   const [intrusionLog] = useState<LogEntry[]>([
-    { id: '1', time: '08:39', message: 'Sound spike detected' },
-    { id: '2', time: '08:12', message: 'Motion investigation' },
-    { id: '3', time: '07:55', message: 'Patrol completed' },
-    { id: '4', time: '07:30', message: 'System initialized' },
-    { id: '5', time: '07:15', message: 'Camera calibration complete' },
+    { id: '1', level: "WARN", time: '08:39', message: 'Sound spike detected' },
+    { id: '2', level: "ALERT", time: '08:12', message: 'Motion investigation' },
+    { id: '3', level: 'INFO', time: '07:55', message: 'Patrol completed' },
+    { id: '4', level: 'SYS', time: '07:30', message: 'System initialized' },
+    { id: '5', level: 'SYS', time: '07:15', message: 'Camera calibration complete' },
   ]);
 
   const currentTime = new Date().toLocaleTimeString('en-US', { 
@@ -83,19 +80,22 @@ export default function SpideyScreen() {
 
   const lastActivity = intrusionLog[0]?.time || currentTime;
 
-  const renderLogItem = ({ item }: { item: LogEntry }) => (
-    <View style={styles.logItem}>
-      <Text style={styles.logTime}>{item.time}</Text>
-      <Text style={styles.logMessage}>{item.message}</Text>
-    </View>
-  );
-
   if (!fontsLoaded) {
     return null;
   }
 
   return (
     <View style={[styles.container, alertOn && styles.alertBorder]}>
+      <Modal
+        visible={isExpanded}
+        animationType="fade"
+        presentationStyle="fullScreen"
+        statusBarTranslucent
+      >
+        <View style={styles.fullscreen}>
+          <LiveFeed actClose={() => setIsExpanded(!isExpanded)}/>
+        </View>
+      </Modal>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
       <ScrollView style={styles.scrollContainer}>
         {/* Header */}
@@ -112,7 +112,7 @@ export default function SpideyScreen() {
 
         {/* Live Feed Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>LIVE FEED</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}><Text style={styles.sectionTitle}>LIVE FEED</Text></View>
           <TouchableOpacity
             style={[
               styles.liveFeed,
@@ -121,18 +121,7 @@ export default function SpideyScreen() {
             onPress={() => setIsExpanded(!isExpanded)}
             activeOpacity={0.8}
           >
-            <View style={styles.liveFeedContent}>
-              <Text style={styles.liveFeedTitle}>LIVE CAMERA STREAM</Text>
-              <Text style={styles.liveFeedSubtitle}>(Raspberry Pi Feed)</Text>
-
-              {videoOn && (
-                <View style={styles.streamIndicator}>
-                  <View style={styles.recordingDot} />
-                  <Text style={styles.recordingText}>STREAMING</Text>
-                </View>
-              )}
-              <LiveFeed/>
-            </View>
+            {!isExpanded  && <LiveFeedGallery videoOn isExpanded onToggleExpand={() => setIsExpanded(!isExpanded)} />}
           </TouchableOpacity>
         </View>
         
@@ -147,20 +136,7 @@ export default function SpideyScreen() {
         />
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>INTRUSION LOG</Text>
-          <View style={styles.logContainer}>
-            <FlatList
-              data={intrusionLog}
-              renderItem={renderLogItem}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={styles.logSeparator} />}
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CONTROLS</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}><Text style={styles.sectionTitle}>CONTROLS</Text></View>
           <View style={styles.controlsGrid}>
             <TouchableOpacity 
               style={styles.controlButton}
@@ -177,6 +153,11 @@ export default function SpideyScreen() {
               <Text style={styles.controlButtonText}>Return to Dock</Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10}}><Text style={styles.sectionTitle}>LOGS</Text></View>
+          <ActivityLog logs={intrusionLog}/>
         </View>
 
         <View style={styles.footer}>
@@ -203,6 +184,10 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+  },
+  fullscreen: {
+    flex: 1,
+    backgroundColor: "#000"
   },
   header: {
     flexDirection: 'row',
@@ -232,14 +217,13 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: 20,
-    marginBottom: 30,
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 18,
     fontFamily: 'Inter_700Bold',
     color: COLORS.accent1,
     letterSpacing: 1.5,
-    marginBottom: 12,
+    marginBottom: 10,
     textTransform: 'uppercase',
   },
   statusGrid: {
@@ -335,59 +319,37 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.8,
   },
-  logContainer: {
-    backgroundColor: 'rgba(51, 51, 51, 0.4)',
-    borderRadius: 12,
-    padding: 16,
-    maxHeight: 200,
-    borderWidth: 1,
-    borderColor: 'rgba(140, 82, 255, 0.15)',
-  },
-  logItem: {
-    flexDirection: 'row',
-    paddingVertical: 8,
-  },
-  logTime: {
-    fontSize: 12,
-    fontFamily: 'Inter_600SemiBold',
-    color: COLORS.accent1,
-    marginRight: 12,
-    width: 50,
-  },
-  logMessage: {
-    fontSize: 13,
-    fontFamily: 'Inter_400Regular',
-    color: COLORS.textPrimary,
-    flex: 1,
-  },
-  logSeparator: {
-    height: 1,
-    backgroundColor: 'rgba(140, 82, 255, 0.1)',
-    marginVertical: 4,
-  },
   controlsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12
   },
   controlButton: {
     flex: 1,
-    backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 18,
-    paddingHorizontal: 20,
-    borderWidth: 0,
-    shadowColor: COLORS.accent1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    backgroundColor: "#0e0e0e", // near-black, not primary
+    borderRadius: 18, // more iOS
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+
+    borderWidth: 1,
+    borderColor: COLORS.accent1 + "30", // subtle accent ring
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3
+  },
+  controlButtonActive: {
+    backgroundColor: COLORS.accent1 + "20",
+    borderColor: COLORS.accent1
   },
   controlButtonText: {
     fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: "Inter_500Medium",
     color: COLORS.textPrimary,
-    textAlign: 'center',
+    textAlign: "center",
+    letterSpacing: 0.3
   },
   footer: {
     paddingHorizontal: 20,
@@ -408,17 +370,16 @@ const styles = StyleSheet.create({
   },
   footerConnected: {
     fontFamily: 'Inter_600SemiBold',
-    color: COLORS.statusOn,
+    color: COLORS.primary,
   },
   footerEdge: {
     fontFamily: 'Inter_600SemiBold',
     color: COLORS.accent1,
   },
   video: {
-  width: '100%',
-  height: 250,
-  marginTop: 12,
-  borderRadius: 12,
-},
-
+    width: '100%',
+    height: 250,
+    marginTop: 12,
+    borderRadius: 12,
+  },
 });

@@ -69,7 +69,6 @@ const SystemStatus: React.FC<SystemStatusProps> = ({
 }) => {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>STATUS</Text>
       <View style={styles.grid}>
         <StatusCard
           label="Video"
@@ -91,16 +90,16 @@ const SystemStatus: React.FC<SystemStatusProps> = ({
         />
       </View>
 
-      <Text style={styles.lastActivity}>
+      {/* <Text style={styles.lastActivity}>
         Last activity: {lastActivity}
-      </Text>
+      </Text> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 20,    
+    marginBottom: 10,    
     flex: 1,
     alignItems: 'center',
   },
@@ -113,13 +112,13 @@ const styles = StyleSheet.create({
   },
 
   grid: {
-    width: "95%",
+    width: "90%",
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: COLORS.accent2 + "33",
     padding: 10,
-    paddingHorizontal: 30,
-    borderRadius: 40,
+    paddingHorizontal: 20,
+    borderRadius: 20,
   },
 
   card: {

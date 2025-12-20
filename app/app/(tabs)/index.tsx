@@ -1,23 +1,21 @@
-import React, { useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-  StatusBar,
-  Modal
-} from 'react-native';
 import { Image } from 'expo-image';
+import React, { useState } from 'react';
+import {
+  Modal,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
-import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import { DEFAULT_COLORS as COLORS } from '@/constants/SpideyColors';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, useFonts } from '@expo-google-fonts/inter';
 
-import LiveFeed from '@/components/ui/LiveFeed';
 import SystemStatus from '@/components/SystemStatus';
-import LiveFeedGallery from '@/components/ui/LiveFeedGallery';
 import ActivityLog, { LogEntry } from '@/components/ui/ActivityLog';
+import LiveFeed from '@/components/ui/LiveFeed';
+import LiveFeedGallery from '@/components/ui/LiveFeedGallery';
 
 
 interface StatusIndicatorProps {
@@ -97,7 +95,7 @@ export default function SpideyScreen() {
         </View>
       </Modal>
       <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-      <ScrollView style={styles.scrollContainer}>
+      <View style={styles.scrollContainer}>
         {/* Header */}
         <View style={styles.header}>
           <Image
@@ -168,7 +166,7 @@ export default function SpideyScreen() {
             <Text style={[styles.footerText, styles.footerEdge]}>Edge Processing ON</Text>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }

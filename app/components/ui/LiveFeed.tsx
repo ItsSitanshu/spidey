@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, View, TouchableOpacity, Animated, Text, Dimensions } from 'react-native';
+import { uploadSnapshot } from '@/hooks/supabaseClient';
+import React, { useRef, useState } from 'react';
+import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/hooks/use-firebase';
 
 const MJPEG_URL = 'http://10.10.254.98:5000/video';
 const { width, height } = Dimensions.get('window');
@@ -70,17 +69,12 @@ const LiveFeed: React.FC<LiveFeedProps> = ({ actClose }) => {
 
     try {
       // Create a new record in Firestore
-      await addDoc(collection(db, 'live_feed'), {
-        timestamp: serverTimestamp(),
-        imageUrl: MJPEG_URL,
-        captured: true,
-      });
-      
+      await uploadSnapshot(MJPEG_URL);
       console.log('Capture saved successfully');
     } catch (error) {
       console.error('Error saving capture:', error);
     } finally {
-      setTimeout(() => setCapturing(false), 500);
+      setCapturing(false);
     }
   };
 

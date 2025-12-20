@@ -1,24 +1,17 @@
+import { DEFAULT_COLORS as COLORS } from '@/constants/SpideyColors';
+import { supabase } from "@/hooks/supabaseClient";
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
-  Pressable,
   FlatList,
   Image,
-  StyleSheet,
   LayoutAnimation,
   Platform,
-  UIManager
+  Pressable,
+  StyleSheet,
+  Text,
+  UIManager,
+  View
 } from "react-native";
-import { DEFAULT_COLORS as COLORS } from '@/constants/SpideyColors';
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  limit
-} from "firebase/firestore";
-import { db } from "@/hooks/use-firebase";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -45,22 +38,31 @@ const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
   const [images, setImages] = useState<GalleryImage[]>([]);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "live_feed"),
-      orderBy("timestamp", "desc"),
-      limit(6)
-    );
+    const fetchImages = async () => {
+      const { data, error } = await supabase
+        .from('live_feed')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(12);
 
-    const unsub = onSnapshot(q, snapshot => {
-      const data: GalleryImage[] = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...(doc.data() as Omit<GalleryImage, "id">)
-      }));
-      setImages(data);
-    });
+      if (error) console.error(error);
+      else setImages(data as GalleryImage[]);
+    };
 
-    return unsub;
+    fetchImages();
+
+    // const subscription = supabase
+    //   .from('live_feed')
+    //   .on('INSERT', payload => {
+    //     setImages(prev => [payload.new as GalleryImage, ...prev].slice(0, 12));
+    //   })
+    //   .subscribe();
+
+    // return () => {
+    //   supabase.removeSubscription(subscription);
+    // };
   }, []);
+
 
   const toggle = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -88,20 +90,18 @@ const LiveFeedGallery: React.FC<LiveFeedGalleryProps> = ({
           )} */}
         </View>
 
-        {isExpanded && (
-          <FlatList
-            data={images}
-            keyExtractor={item => item.id}
-            numColumns={3}
-            columnWrapperStyle={styles.row}
-            renderItem={({ item }) => (
-              <Image
-                source={{ uri: item.url }}
-                style={styles.image}
-              />
-            )}
-          />
-        )}
+        <FlatList
+          data={images}
+          keyExtractor={item => item.id}
+          numColumns={3}
+          columnWrapperStyle={styles.row}
+          renderItem={({ item }) => (
+            <Image
+              source={{ uri: item.url }}
+              style={styles.image}
+            />
+          )}
+        />
       </Pressable>
     </View>
   );
